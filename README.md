@@ -200,6 +200,20 @@ node-problem-detector --apiserver-override=http://APISERVER_IP:APISERVER_INSECUR
 
 For more scenarios, see [here](https://github.com/kubernetes/heapster/blob/master/docs/source-configuration.md#kubernetes)
 
+## Windows
+
+Node Problem Detector can run as a Windows Service. To install run the following commands:
+
+```powershell
+sc.exe create NodeProblemDetector binpath= "node-problem-detector.exe [FLAGS]" start= demand 
+sc.exe failure NodeProblemDetector reset= 0 actions= restart/10000
+sc.exe start NodeProblemDetector
+```
+
+```
+%CD%\bin\windows_amd64\node-problem-detector.exe --logtostderr --enable-k8s-exporter=false --config.system-log-monitor=%CD%\config\windows-containerd-monitor-filelog.json
+```
+
 ## Try It Out
 
 You can try node-problem-detector in a running cluster by injecting messages to the logs that node-problem-detector is watching. For example, Let's assume node-problem-detector is using [KernelMonitor](https://github.com/kubernetes/node-problem-detector/blob/master/config/kernel-monitor.json). On your workstation, run ```kubectl get events -w```. On the node, run ```sudo sh -c "echo 'kernel: BUG: unable to handle kernel NULL pointer dereference at TESTING' >> /dev/kmsg"```. Then you should see the ```KernelOops``` event.

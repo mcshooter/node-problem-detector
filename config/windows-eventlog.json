@@ -1,0 +1,25 @@
+{
+	"plugin": "eventlog",
+	"pluginConfig": {
+		"timestamp": "^time=\"(\\S*)\"",
+		"message": "msg=\"([^\n]*)\"",
+		"timestampFormat": "2006-01-02T15:04:05.999999999-07:00"
+	},
+	"logPath": "C:\\Program Files\\containerd\\containerd.log",
+	"lookback": "5m",
+	"bufferSize": 10,
+	"source": "eventlog",
+	"conditions": [],
+	"rules": [
+		{
+			"type": "temporary",
+			"reason": "WHEA-Logger https://docs.microsoft.com/en-us/windows-hardware/drivers/whea/whea-hardware-error-events",
+			"pattern": "A fatal hardware error has occurred.*"
+		},
+		{
+			"type": "temporary",
+			"reason": "Service Control Manager",
+			"pattern": ".* service terminated unexpectedly.*"
+		},
+	]
+}

@@ -20,6 +20,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"net/url"
@@ -87,6 +88,9 @@ type NodeProblemDetectorOptions struct {
 
 	// NodeName is the node name used to communicate with Kubernetes ApiServer.
 	NodeName string
+
+	// ServiceControlWindowsOnly is for windows.
+	ServiceControlWindowsOnly string
 }
 
 func NewNodeProblemDetectorOptions() *NodeProblemDetectorOptions {
@@ -125,7 +129,10 @@ func (npdo *NodeProblemDetectorOptions) AddFlags(fs *pflag.FlagSet) {
 		20257, "The port to bind the Prometheus scrape endpoint. Prometheus exporter is enabled by default at port 20257. Use 0 to disable.")
 	fs.StringVar(&npdo.PrometheusServerAddress, "prometheus-address",
 		"127.0.0.1", "The address to bind the Prometheus scrape endpoint.")
-
+	if runtime.GOOS == "windows" {
+		fs.StringVar(&npdo.ServiceControlWindowsOnly, "service-control",
+			"", "Service control")
+	}
 	for _, exporterName := range exporters.GetExporterNames() {
 		exporterHandler := exporters.GetExporterHandlerOrDie(exporterName)
 		exporterHandler.Options.SetFlags(fs)
